@@ -6,12 +6,6 @@ Hashing algorithm is Argon2id.
 
 ## Usage
 
-### Install
-
-```fish
-go get -u github.com/salifm/hasher
-```
-
 ### Import
 
 ```go
@@ -33,8 +27,8 @@ hash, salt, err := hasher.Hash(password)
 ```go
 var password string = "password"
 // get hash and salt from database
-result, err := hasher.Verify(password, hash, salt)
-if result {
+match, err := hasher.Verify(password, hash, salt)
+if match {
     // The password is correct
 }
 ```
@@ -42,3 +36,4 @@ if result {
 ## License
 
 This library is licensed under the [MIT](./LICENSE) license
+

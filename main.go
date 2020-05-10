@@ -1,4 +1,4 @@
-package main
+package hasher
 
 import (
 	"crypto/rand"
