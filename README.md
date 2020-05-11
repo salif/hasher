@@ -4,6 +4,14 @@ Library for easy hashing and verifying passwords.
 
 Hashing algorithm is Argon2id.
 
+The parameters are:
+
+* Memory: **65536** B
+* Iterations: **1**
+* Parallelism: **4**
+* Salt length: **16**
+
+
 ## Usage
 
 ### Import
