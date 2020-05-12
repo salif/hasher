@@ -9,7 +9,7 @@ The parameters are:
 * Memory: **65536** B
 * Iterations: **1**
 * Parallelism: **4**
-* Salt length: **16**
+* Salt length: **32**
 
 
 ## Usage

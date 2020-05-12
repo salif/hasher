@@ -6,7 +6,7 @@ import (
 
 const PASSWORD string = "]qadа{w!| Ωf!;f௸ [qyt=}dgu \\jua^_hrц)e ;'eп$`h:Ɋчn&hआ -д/zuxd'm- пعгr%vm ()жуrr,\"ckд bt<#чшwuxષn +ס*х>tвrfdʩфr?b@~кc,wddhр.lxnࡨa "
 const HASH_OUTPUT_LENGTH int = 43
-const SALT_OUTPUT_LENGTH int = 22
+const SALT_OUTPUT_LENGTH int = 43
 
 func Test(t *testing.T) {
 	hash, salt, err := Hash(PASSWORD)

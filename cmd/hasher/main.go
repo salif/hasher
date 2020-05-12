@@ -37,11 +37,7 @@ func verify(args []string) error {
 	if err != nil {
 		return err
 	}
-	match := "false"
-	if result {
-		match = "true"
-	}
-	fmt.Printf("{\"match\": \"%s\"}\n", match)
+	fmt.Printf("{\"match\": \"%v\"}\n", result)
 	return nil
 }
 
