@@ -8,7 +8,6 @@ import (
 	"golang.org/x/crypto/argon2"
 )
 
-// Returns hash with length 43 and salt with length 43
 func Hash(password string) (string, string, error) {
 	salt, err := newSalt(32)
 	if err != nil {

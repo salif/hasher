@@ -1,8 +1,8 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
+	"io/ioutil"
 	"os"
 
 	"github.com/salifm/hasher"
@@ -12,9 +12,11 @@ func main() {
 	var f func(args []string) error
 	args := len(os.Args)
 	if args == 1 {
-		f = repl
+		f = readAndHash
 	} else if args == 2 {
 		f = hash
+	} else if args == 3 {
+		f = readAndVerify
 	} else if args == 4 {
 		f = verify
 	} else {
@@ -32,6 +34,14 @@ func hash(args []string) error {
 	return hashAndPrint(args[1])
 }
 
+func readAndHash(args []string) error {
+	password, err := ioutil.ReadAll(os.Stdin)
+	if err != nil {
+		return err
+	}
+	return hashAndPrint(string(password))
+}
+
 func verify(args []string) error {
 	result, err := hasher.Verify(args[1], args[2], args[3])
 	if err != nil {
@@ -41,22 +51,12 @@ func verify(args []string) error {
 	return nil
 }
 
-func repl(args []string) error {
-	scanner := bufio.NewScanner(os.Stdin)
-	for {
-		fmt.Print("password: ")
-		s := scanner.Scan()
-		if !s {
-			return nil
-		}
-		if scanner.Err() != nil {
-			return scanner.Err()
-		}
-		err := hashAndPrint(scanner.Text())
-		if err != nil {
-			return err
-		}
+func readAndVerify(args []string) error {
+	password, err := ioutil.ReadAll(os.Stdin)
+	if err != nil {
+		return err
 	}
+	return verifyAndPrint(string(password), args[1], args[2])
 }
 
 func hashAndPrint(password string) error {
@@ -65,5 +65,14 @@ func hashAndPrint(password string) error {
 		return err
 	}
 	fmt.Printf("{\"hash\": \"%s\", \"salt\": \"%s\"}\n", hash, salt)
+	return nil
+}
+
+func verifyAndPrint(password string, hash string, salt string) error {
+	result, err := hasher.Verify(password, hash, salt)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("{\"match\": \"%v\"}\n", result)
 	return nil
 }
