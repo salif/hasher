@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/salifm/hasher"
+	"github.com/salif/hasher"
 )
 
 func main() {

@@ -22,7 +22,7 @@ The result is:
 
 ```go
 import (
-    "github.com/salifm/hasher"
+    "github.com/salif/hasher"
 )
 ```
 
@@ -50,7 +50,7 @@ if err == nil && match {
 ### Install
 
 ```fish
-go get github.com/salifm/hasher/cmd/hasher
+go get github.com/salif/hasher/cmd/hasher
 ```
 
 ### Hash
