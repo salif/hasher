@@ -3,76 +3,78 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
+	"strconv"
 
-	"github.com/salif/hasher"
+	"salif.eu/go/hasher"
 )
 
 func main() {
-	var f func(args []string) error
-	args := len(os.Args)
+	var f func(args []string) string
+	var args = len(os.Args)
 	if args == 1 {
 		f = readAndHash
 	} else if args == 2 {
 		f = hash
 	} else if args == 3 {
-		f = readAndVerify
+		f = readAndVerifyVL
 	} else if args == 4 {
+		f = readAndVerify
+	} else if args == 5 {
 		f = verify
 	} else {
-		f = func(args []string) error {
-			return fmt.Errorf("Invalid arguments")
+		f = func(args []string) string {
+			panic("Invalid arguments")
 		}
 	}
-	err := f(os.Args)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "{\"error\": \"%s\"}\n", err.Error())
-	}
+	defer func() {
+		if r := recover(); r != nil {
+			log.Fatalln(r)
+		}
+	}()
+	var result = f(os.Args)
+	fmt.Print(result)
 }
 
-func hash(args []string) error {
-	return hashAndPrint(args[1])
-}
-
-func readAndHash(args []string) error {
+func readAndHash(args []string) string {
 	password, err := ioutil.ReadAll(os.Stdin)
 	if err != nil {
-		return err
+		panic(err)
 	}
-	return hashAndPrint(string(password))
+	var hash, salt, version = hasher.Hash(string(password))
+	return fmt.Sprintf("%s %s %d", hash, salt, version)
 }
 
-func verify(args []string) error {
-	result, err := hasher.Verify(args[1], args[2], args[3])
-	if err != nil {
-		return err
-	}
-	fmt.Printf("{\"match\": \"%v\"}\n", result)
-	return nil
+func hash(args []string) string {
+	var hash, salt, version = hasher.Hash(args[1])
+	return fmt.Sprintf("%s %s %d", hash, salt, version)
 }
 
-func readAndVerify(args []string) error {
-	password, err := ioutil.ReadAll(os.Stdin)
-	if err != nil {
-		return err
+func readAndVerifyVL(args []string) string {
+	var password, rErr = ioutil.ReadAll(os.Stdin)
+	if rErr != nil {
+		panic(rErr)
 	}
-	return verifyAndPrint(string(password), args[1], args[2])
+	return fmt.Sprintf("%t", hasher.Verify(string(password), args[1], args[2], hasher.VERSION))
 }
 
-func hashAndPrint(password string) error {
-	hash, salt, err := hasher.Hash(password)
-	if err != nil {
-		return err
+func readAndVerify(args []string) string {
+	var password, rErr = ioutil.ReadAll(os.Stdin)
+	if rErr != nil {
+		panic(rErr)
 	}
-	fmt.Printf("{\"hash\": \"%s\", \"salt\": \"%s\"}\n", hash, salt)
-	return nil
+	var v, cErr = strconv.Atoi(args[3])
+	if cErr != nil {
+		panic(cErr)
+	}
+	return fmt.Sprintf("%t", hasher.Verify(string(password), args[1], args[2], v))
 }
 
-func verifyAndPrint(password string, hash string, salt string) error {
-	result, err := hasher.Verify(password, hash, salt)
+func verify(args []string) string {
+	var v, err = strconv.Atoi(args[4])
 	if err != nil {
-		return err
+		panic(err)
 	}
-	fmt.Printf("{\"match\": \"%v\"}\n", result)
-	return nil
+	return fmt.Sprintf("%t", hasher.Verify(args[1], args[2], args[3], v))
 }

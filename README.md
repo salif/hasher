@@ -1,20 +1,14 @@
 # hasher
 
-Library for easy hashing and verifying passwords.
+Library and cli tool for password hashing
 
 The hashing algorithm is Argon2id.
 
-The parameters are:
-
-* Memory: **64** MiB
-* Iterations: **1**
-* Parallelism: **4**
-* Salt length: **32**
-
 The result is:
 
-* Hash: base64 string with length of **43**
-* Salt: base64 string with length of **43**
+* Hash: hexadecimal string with length of **64**
+* Salt: hexadecimal string with length of **32**
+* Version: int
 
 ## Usage
 
@@ -22,25 +16,25 @@ The result is:
 
 ```go
 import (
-    "github.com/salif/hasher"
+    "salif.eu/go/hasher"
 )
 ```
 
 ### Hash
 
 ```go
-password := "password"
-hash, salt, err := hasher.Hash(password)
-// save hash and salt to database if err is nil
+var password = "password"
+var hash, salt, version = hasher.Hash(password)
+// save hash, salt and version to database
 ```
 
 ### Verify
 
 ```go
-password := "password"
-// get hash and salt from database
-match, err := hasher.Verify(password, hash, salt)
-if err == nil && match {
+var password = "password"
+// get hash, salt and version from database
+var ok = hasher.Verify(password, hash, salt, version)
+if ok {
     // The password is correct
 }
 ```
@@ -50,7 +44,7 @@ if err == nil && match {
 ### Install
 
 ```fish
-go get github.com/salif/hasher/cmd/hasher
+go get -u salif.eu/go/hasher/cmd/hasher
 ```
 
 ### Hash
