@@ -12,6 +12,12 @@ The result is:
 
 ## Usage
 
+### Get
+
+```sh
+go get -u salif.eu/go/hasher
+```
+
 ### Import
 
 ```go
@@ -43,32 +49,32 @@ if ok {
 
 ### Install
 
-```fish
+```sh
 go get -u salif.eu/go/hasher/cmd/hasher
 ```
 
 ### Hash
 
-```fish
-hasher "password"
+```sh
+echo -n "password" | hasher
 ```
 
 #### or
 
-```fish
-echo -n "password" | hasher
+```sh
+hasher "filename"
 ```
 
 ### Verify
 
-```fish
-hasher "password" "hash" "salt"
+```sh
+echo -n "password" | hasher "hash" "salt" 2
 ```
 
 #### or
 
-```fish
-echo -n "password" | hasher "hash" "salt"
+```sh
+hasher "filename" "hash" "salt" 2
 ```
 
 ## License

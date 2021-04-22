@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 	"strconv"
@@ -11,70 +11,59 @@ import (
 )
 
 func main() {
-	var f func(args []string) string
-	var args = len(os.Args)
-	if args == 1 {
-		f = readAndHash
-	} else if args == 2 {
-		f = hash
-	} else if args == 3 {
-		f = readAndVerifyVL
-	} else if args == 4 {
-		f = readAndVerify
-	} else if args == 5 {
-		f = verify
-	} else {
-		f = func(args []string) string {
-			panic("Invalid arguments")
-		}
-	}
 	defer func() {
 		if r := recover(); r != nil {
 			log.Fatalln(r)
 		}
 	}()
-	var result = f(os.Args)
-	fmt.Print(result)
+	fmt.Print(getResult(os.Args[1:]))
 }
 
-func readAndHash(args []string) string {
-	password, err := ioutil.ReadAll(os.Stdin)
-	if err != nil {
-		panic(err)
+func getResult(args []string) string {
+	var argsc = len(args)
+	if argsc == 0 {
+		return hash(read(os.Stdin))
+	} else if argsc == 1 {
+		return hash(readFile(args[0]))
+	} else if argsc == 3 {
+		return verify(read(os.Stdin), args[0], args[1], args[2])
+	} else if argsc == 4 {
+		return verify(readFile(args[0]), args[1], args[2], args[3])
+	} else {
+		panic("Invalid arguments")
 	}
+}
+
+func hash(password string) string {
 	var hash, salt, version = hasher.Hash(string(password))
 	return fmt.Sprintf("%s %s %d", hash, salt, version)
 }
 
-func hash(args []string) string {
-	var hash, salt, version = hasher.Hash(args[1])
-	return fmt.Sprintf("%s %s %d", hash, salt, version)
-}
-
-func readAndVerifyVL(args []string) string {
-	var password, rErr = ioutil.ReadAll(os.Stdin)
-	if rErr != nil {
-		panic(rErr)
-	}
-	return fmt.Sprintf("%t", hasher.Verify(string(password), args[1], args[2], hasher.VERSION))
-}
-
-func readAndVerify(args []string) string {
-	var password, rErr = ioutil.ReadAll(os.Stdin)
-	if rErr != nil {
-		panic(rErr)
-	}
-	var v, cErr = strconv.Atoi(args[3])
-	if cErr != nil {
-		panic(cErr)
-	}
-	return fmt.Sprintf("%t", hasher.Verify(string(password), args[1], args[2], v))
-}
-
-func verify(args []string) string {
-	var v, err = strconv.Atoi(args[4])
+func verify(password string, hash string, salt string, v string) string {
+	var version, err = strconv.Atoi(v)
 	if err != nil {
 		panic(err)
 	}
-	return fmt.Sprintf("%t", hasher.Verify(args[1], args[2], args[3], v))
+	return fmt.Sprintf("%t", hasher.Verify(string(password), hash, salt, version))
+}
+
+func read(r io.Reader) string {
+	var b, err = io.ReadAll(r)
+	if err != nil {
+		panic(err)
+	}
+	return string(b)
+}
+
+func readFile(filename string) string {
+	var file, oErr = os.Open(filename)
+	if oErr != nil {
+		panic(oErr)
+	}
+	defer func() {
+		if cErr := file.Close(); cErr != nil {
+			panic(cErr)
+		}
+	}()
+	return read(file)
 }

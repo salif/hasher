@@ -20,8 +20,8 @@ func Test(t *testing.T) {
 	if !match {
 		t.Errorf("got: %v, want: %v", match, true)
 	}
-	match = Verify(PASSWORD, hash, "", version)
-	if match {
-		t.Errorf("got: %v, want: %v", match, false)
+	var match2 = Verify(PASSWORD, hash, "", version)
+	if match2 {
+		t.Errorf("got: %v, want: %v", match2, false)
 	}
 }
