@@ -1,5 +1,7 @@
 module salif.eu/go/hasher
 
-go 1.16
+go 1.20
 
-require golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
+require golang.org/x/crypto v0.6.0
+
+require golang.org/x/sys v0.5.0 // indirect
